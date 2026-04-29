@@ -211,7 +211,7 @@ function FacialAnalysisCard({ analysis }: { analysis: { skinTone: string; symmet
   );
 }
 
-function FacialCard({ videoRef, scanning, analysis, scanState }: { videoRef: React.RefObject<HTMLVideoElement>, scanning: boolean, analysis: { skinTone: string; symmetry: string; indicators: { pallor: boolean; cyanosis: boolean; stress: boolean }; confidence: number; interpretation: string } | null, scanState: string }) {
+function FacialCard({ videoRef, scanning, analysis, scanState, statusText }: { videoRef: React.RefObject<HTMLVideoElement>, scanning: boolean, analysis: { skinTone: string; symmetry: string; indicators: { pallor: boolean; cyanosis: boolean; stress: boolean }; confidence: number; interpretation: string } | null, scanState: string, statusText: string }) {
   return (
     <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="bg-white rounded-3xl overflow-hidden border border-gray-100 shadow-xl">
       <div className="relative aspect-square sm:aspect-video bg-black flex items-center justify-center">
@@ -230,6 +230,10 @@ function FacialCard({ videoRef, scanning, analysis, scanState }: { videoRef: Rea
           <p className="font-bold">Neural Engine Active</p>
         </div>
         <Camera className="w-6 h-6 opacity-80" />
+      </div>
+      <div className="p-4 bg-slate-50 text-slate-700 text-sm border-t border-slate-100">
+        <p className="font-semibold">Status</p>
+        <p className="mt-1 text-xs text-slate-500">{scanState === 'running' ? statusText || 'Capturing face data...' : 'Waiting...'}</p>
       </div>
     </motion.div>
   );
@@ -688,7 +692,7 @@ export default function ActiveScan() {
             </motion.div>
           ) : activeStage === 'scanning' ? (
             <motion.div key={currentMode} initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }}>
-              {currentMode === 'heart-rate' ? <HeartRateCard statusText={statusText} isFingerDetected={isFingerDetected} confidence={Math.round(confidence)} progress={progress} scanState={scanState} bpm={bpm || bpmValue} duration={SCAN_CONFIGS[currentMode].duration} /> : <FacialCard videoRef={videoRef} scanning={scanState === 'running'} analysis={facialAnalysis} scanState={scanState} />}
+              {currentMode === 'heart-rate' ? <HeartRateCard statusText={statusText} isFingerDetected={isFingerDetected} confidence={Math.round(confidence)} progress={progress} scanState={scanState} bpm={bpm || bpmValue} duration={SCAN_CONFIGS[currentMode].duration} /> : <FacialCard videoRef={videoRef} scanning={scanState === 'running'} analysis={facialAnalysis} scanState={scanState} statusText={statusText} />}
             </motion.div>
           ) : (
             <SymptomAssessment 

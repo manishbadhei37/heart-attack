@@ -44,6 +44,7 @@ export function useHeartRateMonitor() {
     if (!videoRef.current) {
       videoRef.current = document.createElement('video');
       videoRef.current.playsInline = true;
+      videoRef.current.muted = true;
     }
 
     if (!processingCanvasRef.current) {
@@ -142,6 +143,11 @@ export function useHeartRateMonitor() {
     const canvas = processingCanvasRef.current;
     const video = videoRef.current;
 
+    if (video.readyState < HTMLMediaElement.HAVE_CURRENT_DATA) {
+      animationIdRef.current = requestAnimationFrame(processFrame);
+      return;
+    }
+
     ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
 
     const frameData = ctx.getImageData(0, 0, canvas.width, canvas.height);
@@ -229,11 +235,27 @@ export function useHeartRateMonitor() {
         }
       };
 
-      const stream = await navigator.mediaDevices.getUserMedia(constraints);
+      let stream: MediaStream;
+      try {
+        stream = await navigator.mediaDevices.getUserMedia(constraints);
+      } catch (error) {
+        setStatusText('Rear camera unavailable. Trying front camera...');
+        stream = await navigator.mediaDevices.getUserMedia({
+          audio: false,
+          video: {
+            facingMode: 'user',
+            frameRate: { ideal: FPS },
+            width: { ideal: 640 },
+            height: { ideal: 480 }
+          }
+        });
+      }
       streamRef.current = stream;
 
       if (videoRef.current) {
         videoRef.current.srcObject = stream;
+        videoRef.current.muted = true;
+        videoRef.current.playsInline = true;
 
         await new Promise<void>((resolve) => {
           if (videoRef.current) {
