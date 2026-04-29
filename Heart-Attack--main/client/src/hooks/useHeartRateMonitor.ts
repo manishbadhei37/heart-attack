@@ -178,6 +178,12 @@ export function useHeartRateMonitor() {
     const now = performance.now();
     signalBufferRef.current.push({ value: avgRed, time: now });
 
+    if (signalBufferRef.current.length > BUFFER_SIZE) {
+      signalBufferRef.current.shift();
+    }
+
+    analyzeSignal();
+
 
 
     animationIdRef.current = requestAnimationFrame(processFrame);
