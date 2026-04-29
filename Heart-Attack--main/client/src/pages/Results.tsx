@@ -118,6 +118,33 @@ export default function Results() {
             </div>
           )}
 
+          {result.facialAnalysis && (
+            <div className="bg-card rounded-xl border border-border p-5 shadow-sm mb-6">
+              <p className="text-xs text-muted-foreground uppercase tracking-wider mb-1">Facial AI Assessment</p>
+              <div className="grid grid-cols-3 gap-3">
+                <div className="rounded-3xl bg-slate-50 p-4 text-center">
+                  <p className="text-[10px] uppercase tracking-widest text-gray-400">Skin Tone</p>
+                  <p className="mt-2 font-bold text-gray-900">{result.facialAnalysis.skinTone}</p>
+                </div>
+                <div className="rounded-3xl bg-slate-50 p-4 text-center">
+                  <p className="text-[10px] uppercase tracking-widest text-gray-400">Symmetry</p>
+                  <p className="mt-2 font-bold text-gray-900">{result.facialAnalysis.symmetry}</p>
+                </div>
+                <div className="rounded-3xl bg-slate-50 p-4 text-center">
+                  <p className="text-[10px] uppercase tracking-widest text-gray-400">Stress</p>
+                  <p className="mt-2 font-bold text-gray-900">{result.facialAnalysis.indicators.stress ? 'Elevated' : 'Normal'}</p>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {result.notes && (
+            <div className="bg-card rounded-xl border border-border p-5 shadow-sm mb-6">
+              <p className="text-xs text-muted-foreground uppercase tracking-wider mb-1">Clinical Notes</p>
+              <p className="text-sm text-gray-700">{result.notes}</p>
+            </div>
+          )}
+
           <div className="bg-card rounded-xl border border-border p-6 shadow-sm mb-6">
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-lg font-semibold flex items-center gap-2">

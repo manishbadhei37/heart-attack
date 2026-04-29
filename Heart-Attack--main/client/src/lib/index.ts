@@ -35,8 +35,11 @@ export interface ScanResult {
   facialAnalysis?: {
     skinTone: string;
     symmetry: string;
-    indicators: { pallor: boolean; cyanosis: boolean; jaundice: boolean };
+    confidence?: number;
+    interpretation?: string;
+    indicators: { pallor: boolean; cyanosis: boolean; stress: boolean };
   };
+  notes?: string;
 }
 
 export interface HistoryEntry {

@@ -301,6 +301,7 @@ export function useHeartRateMonitor() {
       setStatusText(`Error: ${error.name || error.message}`);
       setIsProcessing(false);
       isProcessingRef.current = false;
+      throw err;
     }
   }, [processFrame]);
 
