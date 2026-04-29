@@ -42,9 +42,16 @@ export function useHeartRateMonitor() {
 
   useEffect(() => {
     if (!videoRef.current) {
-      videoRef.current = document.createElement('video');
-      videoRef.current.playsInline = true;
-      videoRef.current.muted = true;
+      const videoEl = document.createElement('video');
+      videoEl.playsInline = true;
+      videoEl.muted = true;
+      videoEl.style.position = 'fixed';
+      videoEl.style.width = '0';
+      videoEl.style.height = '0';
+      videoEl.style.opacity = '0';
+      videoEl.style.pointerEvents = 'none';
+      document.body.appendChild(videoEl);
+      videoRef.current = videoEl;
     }
 
     if (!processingCanvasRef.current) {
@@ -58,6 +65,10 @@ export function useHeartRateMonitor() {
 
     return () => {
       doStop();
+      if (videoRef.current && videoRef.current.parentElement) {
+        videoRef.current.parentElement.removeChild(videoRef.current);
+        videoRef.current = null;
+      }
     };
   }, []);
 

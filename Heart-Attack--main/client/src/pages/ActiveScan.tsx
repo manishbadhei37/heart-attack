@@ -384,6 +384,12 @@ export default function ActiveScan() {
 
   const startScan = useCallback(async () => {
     try {
+      setScanError(null);
+      setScanState('running');
+      setProgress(0);
+      setConfidence(0);
+      timerRef.current = Date.now();
+
       console.log(`Starting scan for mode: ${currentMode}`);
       if (currentMode === 'heart-rate') {
         await startMeasurement();
