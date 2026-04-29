@@ -50,6 +50,12 @@ export default function Results() {
     return level.charAt(0).toUpperCase() + level.slice(1);
   };
 
+  const getBpStatusTextColor = (status?: string) => {
+    if (status === 'Hypertensive') return 'text-rose';
+    if (status === 'Elevated') return 'text-amber-500';
+    return 'text-emerald';
+  };
+
   return (
     <Layout>
       <div className="min-h-screen bg-background pb-24">
@@ -101,6 +107,16 @@ export default function Results() {
               </p>
             </div>
           </div>
+
+          {result.metrics?.bloodPressure && (
+            <div className="bg-card rounded-xl border border-border p-5 shadow-sm mb-6">
+              <p className="text-xs text-muted-foreground uppercase tracking-wider mb-1">Estimated Blood Pressure</p>
+              <p className="text-3xl font-bold">{result.metrics.bloodPressure.value}</p>
+              <p className={`text-sm font-semibold ${getBpStatusTextColor(result.metrics.bloodPressure.status)}`}>
+                {result.metrics.bloodPressure.status}
+              </p>
+            </div>
+          )}
 
           <div className="bg-card rounded-xl border border-border p-6 shadow-sm mb-6">
             <div className="flex items-center justify-between mb-4">
