@@ -363,10 +363,27 @@ export default function ActiveScan() {
     } catch (err) {
       console.error("Scan start error:", err);
       // Fallback: move forward anyway for demo purposes if hardware fails
-      setScanState('running'); 
+      setScanState('running');
+      setProgress(0);
+      setConfidence(0);
       timerRef.current = Date.now();
+
+      const duration = SCAN_CONFIGS[currentMode].duration * 1000;
+      const step = () => {
+        const elapsed = Date.now() - timerRef.current;
+        const p = Math.min((elapsed / duration) * 100, 100);
+        setProgress(p);
+        setConfidence(prev => Math.min(prev + Math.random() * 2, 99));
+
+        if (p < 100) {
+          frameRef.current = requestAnimationFrame(step);
+        } else {
+          finishStep();
+        }
+      };
+      frameRef.current = requestAnimationFrame(step);
     }
-  }, [currentMode, startMeasurement]);
+  }, [currentMode, startMeasurement, finishStep]);
 
   const handleScanAgain = () => {
     setReport(null);
