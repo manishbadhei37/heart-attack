@@ -57,8 +57,9 @@ function StepIndicator({ activeIdx }: { activeIdx: number }) {
 }
 
 // --- Cards ---
-function HeartRateCard({ statusText, isFingerDetected, confidence, progress, scanState }: { statusText: string, isFingerDetected: boolean, confidence: number, progress: number, scanState: string }) {
+function HeartRateCard({ statusText, isFingerDetected, confidence, progress, scanState, bpm }: { statusText: string, isFingerDetected: boolean, confidence: number, progress: number, scanState: string, bpm: number | null }) {
   const remaining = Math.max(0, Math.ceil(30 - (progress / 100) * 30));
+  const displayBpm = bpm ?? '---';
   let message = "Place finger firmly on camera…";
   if (progress > 33 && progress <= 66) message = "Hold still, detecting pulse…";
   else if (progress > 66) message = "Almost done, finalizing…";
@@ -77,8 +78,9 @@ function HeartRateCard({ statusText, isFingerDetected, confidence, progress, sca
       </div>
       
       <div className="text-center mb-6 z-10">
-        <h2 className="text-5xl font-black text-gray-900 tracking-tighter tabular-nums">---</h2>
+        <h2 className="text-5xl font-black text-gray-900 tracking-tighter tabular-nums">{displayBpm}</h2>
         <p className="text-xs font-bold text-gray-400 uppercase tracking-widest mt-1">Beats Per Minute</p>
+        <div className="mt-3 text-sm font-semibold text-slate-500">Scan progress: {Math.round(progress)}%</div>
         
         {scanState === 'running' && (
           <div className="mt-4 flex flex-col items-center gap-2">
@@ -569,7 +571,7 @@ export default function ActiveScan() {
             </motion.div>
           ) : activeStage === 'scanning' ? (
             <motion.div key={currentMode} initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }}>
-              {currentMode === 'heart-rate' ? <HeartRateCard statusText={statusText} isFingerDetected={isFingerDetected} confidence={Math.round(confidence)} progress={progress} scanState={scanState} /> : <FacialCard videoRef={videoRef} scanning={scanState === 'running'} />}
+              {currentMode === 'heart-rate' ? <HeartRateCard statusText={statusText} isFingerDetected={isFingerDetected} confidence={Math.round(confidence)} progress={progress} scanState={scanState} bpm={bpm || bpmValue} /> : <FacialCard videoRef={videoRef} scanning={scanState === 'running'} />}
             </motion.div>
           ) : (
             <SymptomAssessment 
