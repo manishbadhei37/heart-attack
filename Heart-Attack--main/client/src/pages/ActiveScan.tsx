@@ -373,6 +373,7 @@ export default function ActiveScan() {
   const [report, setReport] = useState<any>(null);
   const [facialAnalysis, setFacialAnalysis] = useState<{ skinTone: string; symmetry: string; indicators: { pallor: boolean; cyanosis: boolean; stress: boolean }; confidence: number; interpretation: string } | null>(null);
   const [clinicalNotes, setClinicalNotes] = useState('');
+  const [scanError, setScanError] = useState<string | null>(null);
   
   const [stream, setStream] = useState<MediaStream | null>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -414,8 +415,9 @@ export default function ActiveScan() {
       };
       frameRef.current = requestAnimationFrame(step);
     } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'Unable to access camera';
       console.error("Scan start error:", err);
-      // Fallback: move forward anyway for demo purposes if hardware fails
+      setScanError(errorMessage);
       setScanState('running');
       setProgress(0);
       setConfidence(0);
@@ -437,6 +439,13 @@ export default function ActiveScan() {
       frameRef.current = requestAnimationFrame(step);
     }
   }, [currentMode, startMeasurement, finishStep]);
+
+  const handleRetryScan = () => {
+    setScanError(null);
+    setScanState('idle');
+    setProgress(0);
+    setConfidence(0);
+  };
 
   const handleScanAgain = () => {
     setReport(null);
@@ -684,6 +693,16 @@ export default function ActiveScan() {
           </h1>
           <p className="text-sm text-gray-400 font-medium mt-1">Remain steady for best accuracy.</p>
         </div>
+
+        {scanError && (
+          <div className="rounded-3xl border border-red-100 bg-red-50 p-4 text-sm text-red-700">
+            <p className="font-bold">Camera error</p>
+            <p className="mt-1">{scanError}</p>
+            <button onClick={handleRetryScan} className="mt-3 inline-flex items-center justify-center rounded-full bg-red-600 px-4 py-2 text-white text-xs font-bold uppercase tracking-widest hover:bg-red-700 transition-colors">
+              Retry Scan
+            </button>
+          </div>
+        )}
 
         <AnimatePresence mode="wait">
           {report && currentMode === 'heart-rate' ? (
